@@ -1,11 +1,21 @@
-function App() {
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import Header from "./header";
+import Body from "./body";
+import UserDetails from "./userDetails";
+
+const App = () => {
   return (
-    <div className="App">
-      <div className="bg-red-500 text-white py-4 px-6 rounded-lg">
-        Hello Navnit !
+    <Router>
+      <div>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Body />} />
+          <Route path="/userdetails" element={<UserDetails />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
-}
+};
 
 export default App;
