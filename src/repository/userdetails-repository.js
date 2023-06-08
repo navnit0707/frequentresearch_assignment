@@ -7,6 +7,7 @@ class UserRepository {
       const user = await UserDetail.create(data);
       return user;
     } catch (error) {
+      console.log("Something wrong in theuser details repo ");
       throw { error };
     }
   }
