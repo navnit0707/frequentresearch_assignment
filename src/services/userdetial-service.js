@@ -17,7 +17,7 @@ class UserService {
 
   async getUser() {
     try {
-      const user = await this.userRepository.getUser(data);
+      const user = await this.userRepository.getUser();
       return user;
     } catch (error) {
       console.log("something went wrong at service layer");
