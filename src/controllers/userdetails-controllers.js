@@ -1,4 +1,4 @@
-const { UserService } = require("../services/userdetial-service");
+const { UserService } = require("../services/index");
 
 const userService = new UserService();
 const create = async (req, res) => {
@@ -21,14 +21,14 @@ const create = async (req, res) => {
   }
 };
 const get = async (req, res) => {
-  const user = await userService.getUser();
-  return res.status(201).json({
-    data: user,
-    success: true,
-    message: "Successfully created a city",
-    err: {},
-  });
   try {
+    const user = await userService.getUser();
+    return res.status(201).json({
+      data: user,
+      success: true,
+      message: "Successfully created a city",
+      err: {},
+    });
   } catch (error) {
     console.log("Something is wrong at controller");
     return res.status(500).json({
