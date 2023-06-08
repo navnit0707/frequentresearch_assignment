@@ -11,6 +11,16 @@ class UserRepository {
       throw { error };
     }
   }
+  async getUser() {
+    try {
+      console.log();
+      const user = await UserDetail.findAll();
+      return user;
+    } catch (error) {
+      console.log("Something wrong in the user details repo ");
+      throw { error };
+    }
+  }
 }
 
 module.exports = UserRepository;
