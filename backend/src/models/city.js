@@ -5,10 +5,6 @@ module.exports = (sequelize, DataTypes) => {
   class City extends Model {
     static associate(models) {
       City.belongsTo(models.State, { foreignKey: "stateId" });
-      City.belongsTo(models.Country, {
-        through: models.State,
-        foreignKey: "countryId",
-      });
     }
   }
 
@@ -19,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       stateId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      countryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
