@@ -1,18 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { calculateAge, getYearDropdownItems } from "./utility/helper";
+
+//fetch
+import useCities from "./utility/fetchCity";
+import useCountry from "./utility/fetchCountry";
+import useStates from "./utility/fetchState";
+
 const FormComponent = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
+  const [countries, setCountries] = useState([]);
+  const [state, setState] = useState([]);
   const [city, setCity] = useState("");
   const [gender, setGender] = useState("");
-
   const [selectedDate, setSelectedDate] = useState(null);
-  const [age, setAge] = useState(null);
+  const [age, setAge] = useState("");
+
+  const fetchedCountries = useCountry();
+
+  useEffect(() => {
+    if (fetchedCountries.success) {
+      setCountries(fetchedCountries.data);
+      console.log(fetchedCountries.data);
+      // setState(fetchedCountries.data);
+    } else {
+      console.error(fetchedCountries.message);
+    }
+  }, [fetchedCountries]);
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -28,6 +46,9 @@ const FormComponent = () => {
 
   const handleCountryChange = (event) => {
     setCountry(event.target.value);
+
+    setState(event.target.value);
+    setCity("");
   };
 
   const handleStateChange = (event) => {
@@ -153,11 +174,11 @@ const FormComponent = () => {
               className="w-full px-3 py-2 border rounded"
               required>
               <option value="">Select a country</option>
-              {/* Render the list of countries from the database */}
-              <option value="country1">Country 1</option>
-              <option value="country2">Country 2</option>
-              <option value="country3">Country 3</option>
-              {/* Add more options as needed */}
+              {countries.map((country) => (
+                <option key={country.id} value={country.id}>
+                  {country.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="w-1/3 mx-2">
@@ -171,13 +192,11 @@ const FormComponent = () => {
               className="w-full px-3 py-2 border rounded"
               required>
               <option value="">Select a state</option>
-              {/* Render the list of states based on the selected country */}
-              {/* You can fetch the list of states dynamically from the database */}
-              {/* and populate the options */}
-              <option value="state1">State 1</option>
-              <option value="state2">State 2</option>
-              <option value="state3">State 3</option>
-              {/* Add more options as needed */}
+              {/* {state.map((state) => (
+                <option key={state.id} value={state.id}>
+                  {state.name}
+                </option>
+              ))} */}
             </select>
           </div>
           <div className="w-1/3 ml-2">
