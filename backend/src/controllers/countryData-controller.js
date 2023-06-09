@@ -22,13 +22,14 @@ const getAllCountries = async (req, res) => {
   }
 };
 
-const getAllStates = async (req, res) => {
+const getStatesByCountryId = async (req, res) => {
   try {
-    const states = await countryService.getStates();
+    const { countryId } = req.params;
+    const states = await countryService.getStatesByCountryId(countryId);
     return res.status(200).json({
       data: states,
       success: true,
-      message: "Successfully fetched states",
+      message: "Successfully fetched states by country ID",
       error: null,
     });
   } catch (error) {
@@ -36,19 +37,20 @@ const getAllStates = async (req, res) => {
     return res.status(500).json({
       data: null,
       success: false,
-      message: "Failed to fetch states",
+      message: "Failed to fetch states by country ID",
       error: error,
     });
   }
 };
 
-const getAllCities = async (req, res) => {
+const getCitiesByStateId = async (req, res) => {
   try {
-    const cities = await countryService.getCities();
+    const { stateId } = req.params;
+    const cities = await countryService.getCitiesByStateId(stateId);
     return res.status(200).json({
       data: cities,
       success: true,
-      message: "Successfully fetched cities",
+      message: "Successfully fetched cities by state ID",
       error: null,
     });
   } catch (error) {
@@ -56,7 +58,7 @@ const getAllCities = async (req, res) => {
     return res.status(500).json({
       data: null,
       success: false,
-      message: "Failed to fetch cities",
+      message: "Failed to fetch cities by state ID",
       error: error,
     });
   }
@@ -64,6 +66,6 @@ const getAllCities = async (req, res) => {
 
 module.exports = {
   getAllCountries,
-  getAllStates,
-  getAllCities,
+  getStatesByCountryId,
+  getCitiesByStateId,
 };

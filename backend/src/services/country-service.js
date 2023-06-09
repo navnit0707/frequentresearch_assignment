@@ -5,9 +5,9 @@ class CountryService {
     this.countryRepository = new CountryRepository();
   }
 
-  async getCities() {
+  async getCitiesByStateId(stateId) {
     try {
-      const cities = await this.countryRepository.getCities();
+      const cities = await this.countryRepository.getCitiesByStateId(stateId);
       return cities;
     } catch (error) {
       console.log("Something went wrong in the Country service");
@@ -15,9 +15,11 @@ class CountryService {
     }
   }
 
-  async getStates() {
+  async getStatesByCountryId(countryId) {
     try {
-      const states = await this.countryRepository.getStates();
+      const states = await this.countryRepository.getStatesByCountryId(
+        countryId
+      );
       return states;
     } catch (error) {
       console.log("Something went wrong in the Country service");

@@ -1,9 +1,13 @@
 const { State, Country, City } = require("../models/index");
 
 class CountryRepository {
-  async getCities() {
+  async getCitiesByStateId(stateId) {
     try {
-      const cities = await City.findAll();
+      const cities = await City.findAll({
+        where: {
+          stateId: stateId,
+        },
+      });
       return cities;
     } catch (error) {
       console.log("Something went wrong in the Country city repository");
@@ -11,9 +15,13 @@ class CountryRepository {
     }
   }
 
-  async getStates() {
+  async getStatesByCountryId(countryId) {
     try {
-      const states = await State.findAll();
+      const states = await State.findAll({
+        where: {
+          countryId: countryId,
+        },
+      });
       return states;
     } catch (error) {
       console.log("Something went wrong in the Country repository");
