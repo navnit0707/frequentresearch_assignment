@@ -117,7 +117,7 @@ const FormComponent = () => {
         setCity("");
         setGender("");
         setSelectedDate(null);
-        setAge(null);
+        setAge("");
       } else {
         alert("Error creating user. Please try again.");
       }
@@ -192,6 +192,9 @@ const FormComponent = () => {
               className="w-full px-3 py-2 border rounded"
               required>
               <option value="">Select a state</option>
+              <option value="state1">state 1</option>
+              <option value="state2">state 2</option>
+              <option value="state3">state 3</option>
               {/* {state.map((state) => (
                 <option key={state.id} value={state.id}>
                   {state.name}
