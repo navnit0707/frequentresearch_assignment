@@ -130,9 +130,9 @@ const FormComponent = () => {
       email,
       gender,
       selectedDate,
-      selectedCountry,
-      selectedState,
-      selectedCity,
+      countryList[selectedCountry - 1].name,
+      stateList[selectedState - 1].name,
+      cityList[selectedCity - 1].name,
       age
     );
     if (result) {
