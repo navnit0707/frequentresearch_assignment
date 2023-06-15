@@ -149,10 +149,10 @@ const FormComponent = () => {
   }
 
   return (
-    <div className=" flex  flex-col min-h-screen  rounded-lg">
+    <div className=" flex flex-col  h-[80vh] ">
       <form
         onSubmit={handleSubmit}
-        className="m-2 p-2 bg-blue-200 flex  flex-col  max-w-md">
+        className="m-2 p-2 bg-blue-200 flex flex-col flex-1 max-w-md rounded-lg">
         <div className="flex flex-1  mb-4">
           <div className="w-1/2 mr-2">
             <label htmlFor="firstName" className="block text-xl mb-2 font-bold">
@@ -268,6 +268,15 @@ const FormComponent = () => {
               scrollableMonthDropdown
               yearDropdownItems={getYearDropdownItems()}
               required
+              maxDate={
+                new Date(
+                  new Date().getFullYear() - 14,
+
+                  new Date().getMonth(),
+                  new Date().getDate()
+                )
+              } // Set the maximum selectable date to the current date
+              minDate={new Date(new Date().getFullYear() - 14 - 100)} // Set the minimum selectable date to 14 years less than the current date
             />
           </div>
           <div className="ml-2">
@@ -353,7 +362,7 @@ const FormComponent = () => {
         </div>
         <button
           type="submit"
-          className="flex flex-col flex-1 px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-600">
+          className="flex flex-col flex-1 items-center justify-center px-4 py-2 text-5xl text-center font-bold text-white bg-blue-500 rounded hover:bg-blue-600 w-full">
           Submit
         </button>
       </form>
