@@ -1,13 +1,24 @@
-export const submitData = async (event, ...arr) => {
+export const submitData = async (
+  event,
+  firstName,
+  lastName,
+  email,
+  gender,
+  selectedDate,
+  selectedCountry,
+  selectedState,
+  selectedCity,
+  age
+) => {
   event.preventDefault();
 
   if (
     firstName === "" ||
     lastName === "" ||
     email === "" ||
-    country === "" ||
-    state === "" ||
-    city === "" ||
+    selectedCountry === "" ||
+    selectedState === "" ||
+    selectedCity === "" ||
     gender === "" ||
     selectedDate === null ||
     age <= 14
@@ -22,9 +33,9 @@ export const submitData = async (event, ...arr) => {
   formData.append("firstName", firstName);
   formData.append("lastName", lastName);
   formData.append("email", email);
-  formData.append("country", country);
-  formData.append("state", state);
-  formData.append("city", city);
+  formData.append("country", selectedCountry);
+  formData.append("state", selectedState);
+  formData.append("city", selectedCity);
   formData.append("gender", gender);
   formData.append("dateOfBirth", selectedDate.toISOString().split("T")[0]);
 

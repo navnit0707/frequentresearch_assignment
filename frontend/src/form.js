@@ -35,6 +35,7 @@ const FormComponent = () => {
       try {
         const country = await countryData();
         setCountryList(country);
+        setSelectedCountry(country[0].id);
         console.log("country", countryList);
 
         // console.log("country", countryList);
@@ -50,9 +51,9 @@ const FormComponent = () => {
     if (countryList.length > 0) {
       const fetchStates = async () => {
         try {
-          const state = await stateDataByCountryId(countryList[0].id);
+          const state = await stateDataByCountryId(selectedCountry);
           setStateList(state);
-          // console.log("state", stateList);
+          setSelectedState(state[0].id);
         } catch (error) {
           console.log("Error", error);
         }
@@ -66,8 +67,9 @@ const FormComponent = () => {
     if (stateList.length > 0) {
       const fetchCities = async () => {
         try {
-          const city = await citiesByStateId(stateList[0].id);
+          const city = await citiesByStateId(selectedState);
           setCityList(city);
+          setSelectedCity(city[0].id);
           // console.log("city", cityList);
         } catch (error) {
           console.log("Error", error);
@@ -76,7 +78,7 @@ const FormComponent = () => {
 
       fetchCities();
     }
-  }, [stateList, selectedCountry]);
+  }, [selectedState, stateList, selectedCountry]);
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -92,14 +94,19 @@ const FormComponent = () => {
 
   const handleCountryChange = (event) => {
     setSelectedCountry(event.target.value);
-    setSelectedCity(null);
-    setSelectedState(null);
+
+    setSelectedState("");
+    setStateList([]);
+
+    setSelectedCity("");
+    setCityList([]);
   };
 
   const handleStateChange = (event) => {
-    setSelectedCity(event.target.value);
+    setSelectedState(event.target.value);
 
-    setSelectedCity([]);
+    setCityList([]);
+    setSelectedCity("");
   };
 
   const handleCityChange = (event) => {
@@ -116,14 +123,18 @@ const FormComponent = () => {
   };
 
   async function handleSubmit(e) {
-    const result = await submitData(e, [
+    const result = await submitData(
+      e,
       firstName,
       lastName,
       email,
       gender,
       selectedDate,
-      age,
-    ]);
+      selectedCountry,
+      selectedState,
+      selectedCity,
+      age
+    );
     if (result) {
       setFirstName("");
       setLastName("");
@@ -250,6 +261,7 @@ const FormComponent = () => {
                   </option>
                 ))
               )}
+              {console.log(selectedCountry)}
             </select>
           </div>
           <div className="w-1/3 mx-2">
