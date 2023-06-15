@@ -1,36 +1,82 @@
 import React, { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+
+//utlities
 import { calculateAge, getYearDropdownItems } from "./utility/helper";
+import { submitData } from "./utility/submitData";
 
 //fetch
-import useCities from "./utility/fetchCity";
-import useCountry from "./utility/fetchCountry";
-import useStates from "./utility/fetchState";
+import {
+  countryData,
+  stateDataByCountryId,
+  citiesByStateId,
+} from "./utility/fetchData";
 
 const FormComponent = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
-  const [countries, setCountries] = useState([]);
-  const [state, setState] = useState([]);
-  const [city, setCity] = useState("");
   const [gender, setGender] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [age, setAge] = useState("");
 
-  const fetchedCountries = useCountry();
+  const [countryList, setCountryList] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState([]);
+
+  const [stateList, setStateList] = useState([]);
+  const [selectedState, setSelectedState] = useState([]);
+
+  const [cityList, setCityList] = useState([]);
+  const [selectedCity, setSelectedCity] = useState([]);
 
   useEffect(() => {
-    if (fetchedCountries.success) {
-      setCountries(fetchedCountries.data);
-      console.log(fetchedCountries.data);
-      // setState(fetchedCountries.data);
-    } else {
-      console.error(fetchedCountries.message);
+    const initialCountry = async () => {
+      try {
+        const country = await countryData();
+        setCountryList(country);
+        console.log("country", countryList);
+
+        // console.log("country", countryList);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+
+    initialCountry();
+  }, []);
+
+  useEffect(() => {
+    if (countryList.length > 0) {
+      const fetchStates = async () => {
+        try {
+          const state = await stateDataByCountryId(countryList[0].id);
+          setStateList(state);
+          // console.log("state", stateList);
+        } catch (error) {
+          console.log("Error", error);
+        }
+      };
+
+      fetchStates();
     }
-  }, [fetchedCountries]);
+  }, [countryList, selectedCountry]);
+
+  useEffect(() => {
+    if (stateList.length > 0) {
+      const fetchCities = async () => {
+        try {
+          const city = await citiesByStateId(stateList[0].id);
+          setCityList(city);
+          // console.log("city", cityList);
+        } catch (error) {
+          console.log("Error", error);
+        }
+      };
+
+      fetchCities();
+    }
+  }, [stateList, selectedCountry]);
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -45,18 +91,19 @@ const FormComponent = () => {
   };
 
   const handleCountryChange = (event) => {
-    setCountry(event.target.value);
-
-    setState(event.target.value);
-    setCity("");
+    setSelectedCountry(event.target.value);
+    setSelectedCity(null);
+    setSelectedState(null);
   };
 
   const handleStateChange = (event) => {
-    setState(event.target.value);
+    setSelectedCity(event.target.value);
+
+    setSelectedCity([]);
   };
 
   const handleCityChange = (event) => {
-    setCity(event.target.value);
+    setSelectedCity(event.target.value);
   };
 
   const handleGenderChange = (event) => {
@@ -68,64 +115,85 @@ const FormComponent = () => {
     setAge(calculateAge(date));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (
-      firstName === "" ||
-      lastName === "" ||
-      email === "" ||
-      country === "" ||
-      state === "" ||
-      city === "" ||
-      gender === "" ||
-      selectedDate === null ||
-      age <= 14
-    ) {
-      alert(
-        "Please fill in all the required fields and ensure that the age is greater than 14."
-      );
-      return;
+  async function handleSubmit(e) {
+    const result = await submitData(e, [
+      firstName,
+      lastName,
+      email,
+      gender,
+      selectedDate,
+      age,
+    ]);
+    if (result) {
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setSelectedCountry("");
+      setSelectedState("");
+      setSelectedCity("");
+      setGender("");
+      setSelectedDate(null);
+      setAge("");
     }
+  }
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
 
-    const formData = new URLSearchParams();
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("email", email);
-    formData.append("country", country);
-    formData.append("state", state);
-    formData.append("city", city);
-    formData.append("gender", gender);
-    formData.append("dateOfBirth", selectedDate.toISOString().split("T")[0]);
+  //   if (
+  //     firstName === "" ||
+  //     lastName === "" ||
+  //     email === "" ||
+  //     country === "" ||
+  //     state === "" ||
+  //     city === "" ||
+  //     gender === "" ||
+  //     selectedDate === null ||
+  //     age <= 14
+  //   ) {
+  //     alert(
+  //       "Please fill in all the required fields and ensure that the age is greater than 14."
+  //     );
+  //     return;
+  //   }
 
-    try {
-      const response = await fetch("http://localhost:3001/api/v1/createuser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
-      });
+  //   const formData = new URLSearchParams();
+  //   formData.append("firstName", firstName);
+  //   formData.append("lastName", lastName);
+  //   formData.append("email", email);
+  //   formData.append("country", country);
+  //   formData.append("state", state);
+  //   formData.append("city", city);
+  //   formData.append("gender", gender);
+  //   formData.append("dateOfBirth", selectedDate.toISOString().split("T")[0]);
 
-      if (response.ok) {
-        alert("User created successfully!");
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setCountry("");
-        setState("");
-        setCity("");
-        setGender("");
-        setSelectedDate(null);
-        setAge("");
-      } else {
-        alert("Error creating user. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error creating user:", error);
-      alert("An error occurred while creating the user. Please try again.");
-    }
-  };
+  //   try {
+  //     const response = await fetch("http://localhost:3001/api/v1/createuser", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //       body: formData.toString(),
+  //     });
+
+  //     if (response.ok) {
+  //       alert("User created successfully!");
+  //       setFirstName("");
+  //       setLastName("");
+  //       setEmail("");
+  //       setCountry("");
+  //       setState("");
+  //       setCity("");
+  //       setGender("");
+  //       setSelectedDate(null);
+  //       setAge("");
+  //     } else {
+  //       alert("Error creating user. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating user:", error);
+  //     alert("An error occurred while creating the user. Please try again.");
+  //   }
+  // };
 
   return (
     <div className=" flex  flex-col min-h-screen  rounded-lg">
@@ -169,16 +237,19 @@ const FormComponent = () => {
             </label>
             <select
               id="country"
-              value={country}
+              value={selectedCountry}
               onChange={handleCountryChange}
               className="w-full px-3 py-2 border rounded"
               required>
-              <option value="">Select a country</option>
-              {countries.map((country) => (
-                <option key={country.id} value={country.id}>
-                  {country.name}
-                </option>
-              ))}
+              {!countryList.length ? (
+                <option value="">Loading ...</option>
+              ) : (
+                countryList.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
           <div className="w-1/3 mx-2">
@@ -187,19 +258,19 @@ const FormComponent = () => {
             </label>
             <select
               id="state"
-              value={state}
+              value={selectedState}
               onChange={handleStateChange}
               className="w-full px-3 py-2 border rounded"
               required>
-              <option value="">Select a state</option>
-              <option value="state1">state 1</option>
-              <option value="state2">state 2</option>
-              <option value="state3">state 3</option>
-              {/* {state.map((state) => (
-                <option key={state.id} value={state.id}>
-                  {state.name}
-                </option>
-              ))} */}
+              {!stateList.length ? (
+                <option value="">Loading ...</option>
+              ) : (
+                stateList.map((state) => (
+                  <option key={state.id} value={state.id}>
+                    {state.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
           <div className="w-1/3 ml-2">
@@ -208,14 +279,19 @@ const FormComponent = () => {
             </label>
             <select
               id="city"
-              value={city}
+              value={selectedCity}
               onChange={handleCityChange}
               className="w-full px-3 py-2 border rounded"
               required>
-              <option value="">Select a city</option>
-              <option value="city1">City 1</option>
-              <option value="city2">City 2</option>
-              <option value="city3">City 3</option>
+              {!cityList.length ? (
+                <option value="">Loading ...</option>
+              ) : (
+                cityList.map((city) => (
+                  <option key={city.id} value={city.id}>
+                    {city.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
         </div>
